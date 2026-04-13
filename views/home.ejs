@@ -1,34 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 6</title>
-</head>
+<%- include("partials/header.ejs") %>
 
-<body>
-    <h1>Quote Finder</h1>
+    <body>
+        <nav> <a href="/">Go Home</a> </nav>
+        <h1>Quote Finder</h1>
 
-    <nav> <a href="home.ejs">Home</a> </nav>
+        <div class="card">
+            <form action="/searchByKeyword" method="GET" id="searchByKeywordForm">
+                Keyword: <input type="text" name="keyword">
+                <button id="keywordButton"> Search by Keyword </button>
+            </form>
 
-    <form action="/searchByKeyword" method="GET">
-        Keyword: <input type="text" name="keyword">
-        <button> Search by Keyword </button>
-    </form>
+            <form action="/searchByAuthor" method="GET">
+                Author:
+                <select name="authorId">
+                    <% for (let i of authors) { %>
+                        <option value="<%= i.authorId%>">
+                            <%= i.firstName%>
+                                <%= i.lastName%>
+                        </option>
+                        <% } %>
+                </select>
+                <button> Search by Author </button>
+            </form>
 
-    <form action="/searchByAuthor" method="GET">
-        Author:
-        <select name="authorId">
-            <% for (let i of authors) { %>
-                <option value="<%= i.authorId%>">
-                    <%= i.firstName%> <%= i.lastName%>
-                </option>
-            <% } %>
-        </select>
-        <button> Search by Keyword </button>
-    </form>
+            <form action="/searchByCategory" method="GET">
+                Category:
+                <select name="category">
+                    <% for (let i of categories) { %>
+                        <option value="<%= i.category %>">
+                            <%= i.category %>
+                        </option>
+                        <% } %>
+                </select>
+                <button> Search by Category </button>
+            </form>
 
-</body>
+            <form action="/searchByLikes" method="GET">
+                Minimum Likes: <input type="number" name="likesMin"><br>
+                Maximum Likes: <input type="number" name="likesMax"><br>
+                <button> Search by Likes </button>
+            </form>
+        </div>
+
+        <script src="/js/home.js"></script>
+
+    </body>
 
 </html>

@@ -1,20 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 6: Quotes</title>
-</head>
-<body>
 
-    <h1>Famous Quotes</h1>
+<%- include("partials/header.ejs") %>
 
-    <% for (let i of rows) { %>
-    <%= i.quote %><br>
-    <%= i.firstName %><br>
-    --------------
-    <br>
-    <% } %>
+    <body>
+        <nav> <a href="/">Go Home</a> </nav>
+        <h1>Famous Quotes</h1>
 
-</body>
+        <div class="card">
+            <div>
+                <% for (let i of rows) { %>
+                    <%= i.quote %><br>
+                        <a href="#" class="authorName" authorId="<%=i.authorId%>">
+                            <%= i.firstName %>
+                                <%= i.lastName %>
+                        </a><br>
+                        --------------
+                        <br>
+                        <% } %>
+            </div>
+        </div>
+
+        <!-- creating modal window -->
+        <dialog id="authorModal">
+            <div id="authorInfo">
+                <h1 id="authorName"></h1>
+                <img id="authorPicture" width="300">
+                <div class="row">
+                    <h3>Date of Birth: <span id="authorDOB"></span></h3>
+                    <h3>Date of Death: <span id="authorDOD"></span></h3>
+                </div>
+                <h3>Sex: <span id="authorSex"></span> </h3>
+                <h3>Profession: <span id="authorProfession"></span> </h3>
+                <h3>Country: <span id="authorCountry"></span> </h3>
+                ----------------------------------
+                <p id="authorBio"></p>
+                <br>
+                <button id="closeModal">Close</button>
+            </div>
+        </dialog>
+
+        <script src="/js/quotes.js"></script>
+
+    </body>
+
 </html>

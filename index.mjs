@@ -16,6 +16,21 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 //routes
+
+app.get('/api/author/:authorId', async(req, res) => {
+    let authorId = req.params.authorId;
+
+    let sql = `
+    SELECT *
+    FROM authors
+    WHERE authorId = ?
+    `;
+
+    const [authorInfo] = await pool.query(sql, [authorId]);
+
+    res.send(authorInfo);
+});
+
 app.get('/', async(req, res) => {
     let sql = `
     SELECT authorId, firstName, lastName
@@ -24,9 +39,9 @@ app.get('/', async(req, res) => {
     `;
 
     let sql2 = `
-    SELECT authorId, firstName, lastName
-    FROM authors
-    ORDER BY lastName
+    SELECT DISTINCT category
+    FROM quotes
+    ORDER BY category
     `;
 
     const [authors] = await pool.query(sql);
@@ -38,7 +53,7 @@ app.get('/', async(req, res) => {
 app.get("/searchByKeyword", async (req, res) => {
     try {
         let keyword = req.query.keyword;
-        let sql = `SELECT quote, firstName, lastName
+        let sql = `SELECT quote, firstName, lastName, authorId
                     FROM quotes q
                     NATURAL JOIN authors
                     WHERE quote LIKE ? `;
@@ -50,12 +65,29 @@ app.get("/searchByKeyword", async (req, res) => {
         console.error("Database error:", err);
         res.status(500).send("Database error!");
     }
-});//dbTest
+});
+
+app.get("/searchByCategory", async (req, res) => {
+    try {
+        let category = req.query.category;
+        let sql = `SELECT quote, firstName, lastName, authorId, category
+                    FROM quotes q
+                    NATURAL JOIN authors
+                    WHERE category LIKE ? `;
+        let sqlParams = [`%${category}%`];
+
+        const [rows] = await pool.query(sql, sqlParams);
+        res.render("quotes.ejs", { rows });
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).send("Database error!");
+    }
+});
 
 app.get("/searchByAuthor", async (req, res) => {
     try {
         let authorId = req.query.authorId;
-        let sql = `SELECT quote, firstName, lastName
+        let sql = `SELECT quote, firstName, lastName, authorId
                     FROM quotes q
                     NATURAL JOIN authors
                     WHERE authorId LIKE ? `;
@@ -67,7 +99,25 @@ app.get("/searchByAuthor", async (req, res) => {
         console.error("Database error:", err);
         res.status(500).send("Database error!");
     }
-});//dbTest
+});
+
+app.get("/searchByLikes", async (req, res) => {
+    try {
+        let likesMax = req.query.likesMax;
+        let likesMin = req.query.likesMin;
+        let sql = `SELECT quote, firstName, lastName, authorId, likes
+                    FROM quotes q
+                    NATURAL JOIN authors
+                    WHERE likes >= ? AND likes <= ?`;
+        let sqlParams = [likesMin, likesMax];
+
+        const [rows] = await pool.query(sql, sqlParams);
+        res.render("quotes.ejs", { rows });
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).send("Database error!");
+    }
+});
 
 app.get("/dbTest", async (req, res) => {
     try {
